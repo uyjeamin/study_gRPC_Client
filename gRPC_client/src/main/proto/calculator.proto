@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option java_package = "com.example.grpc";
+option java_multiple_files = true;
+
+service CalculatorService {
+  rpc add(AddRequest) returns (stream AddResponse);
+}
+
+message AddRequest {
+  int32 x = 1;
+  int32 y = 2;
+}
+
+message AddResponse {
+  int64 result = 1;
+}

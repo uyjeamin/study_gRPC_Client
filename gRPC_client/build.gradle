@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'com.google.protobuf' version '0.9.4'
+    id 'org.springframework.boot' version '2.7.18'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+}
+
+group = 'com.example'
+version = '1.0.0'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // gRPC BOM (모든 gRPC 의존성 버전 자동 통일)
+    implementation platform('io.grpc:grpc-bom:1.64.0')
+
+    implementation 'io.grpc:grpc-protobuf:1.64.0'
+    implementation 'io.grpc:grpc-stub:1.64.0'
+    implementation 'io.grpc:grpc-netty-shaded:1.64.0'
+
+    // grpc 클라이언트
+    implementation 'net.devh:grpc-client-spring-boot-starter:2.15.0.RELEASE'
+
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+protobuf {
+    protoc {
+        artifact = 'com.google.protobuf:protoc:3.25.1'
+    }
+    plugins {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.64.0'
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+            task.plugins {
+                grpc {}
+            }
+        }
+    }
+}
+
+sourceSets.main.java.srcDirs += [
+        "build/generated/source/proto/main/java",
+        "build/generated/source/proto/main/grpc"
+]
+
+tasks.named("compileJava") {
+    dependsOn("generateProto")
+}
